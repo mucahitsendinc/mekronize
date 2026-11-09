@@ -62,7 +62,7 @@ class TrackListFragment : Fragment() {
                     v.findViewById<View>(R.id.actions).visibility = if (data.isEmpty()) View.GONE else View.VISIBLE
                     empty.visibility = if (data.isEmpty()) View.VISIBLE else View.GONE
                     empty.text = if (kind == KIND_FAV) "Henüz favori yok. Parçaları çaldıkça en çok çalınanlar burada listelenir; ❤ ile de ekleyebilirsin."
-                    else "İçerik yok. Sağ üstteki senkron simgesinden key girip senkronla."
+                    else "İçerik yok. Ana ekrandaki Senkron kutusundan key girip senkronla."
                 }
             }
         }
@@ -76,6 +76,7 @@ class TrackListFragment : Fragment() {
         const val KIND_MUSIC = 2
         const val KIND_FAV = 3
         const val KIND_PLAYLIST = 4
+        const val KIND_PLAYLISTS = 5
 
         fun of(kind: Int, playlistId: Long = 0) = TrackListFragment().apply {
             arguments = Bundle().apply { putInt(ARG_KIND, kind); putLong(ARG_PLAYLIST, playlistId) }

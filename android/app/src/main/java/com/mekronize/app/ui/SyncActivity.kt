@@ -9,10 +9,8 @@ import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
-import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.ProgressBar
-import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -31,7 +29,6 @@ import kotlinx.coroutines.launch
 class SyncActivity : AppCompatActivity() {
     private lateinit var prefs: Prefs
     private lateinit var key: EditText
-    private lateinit var server: EditText
 
     private val notifPerm = registerForActivityResult(ActivityResultContracts.RequestPermission()) { startSync() }
 
@@ -41,14 +38,12 @@ class SyncActivity : AppCompatActivity() {
         prefs = Prefs(this)
 
         findViewById<MaterialToolbar>(R.id.toolbar).apply {
-            setNavigationIcon(androidx.appcompat.R.drawable.abc_ic_ab_back_material)
+            setNavigationIcon(R.drawable.ic_back)
+            setNavigationIconTint(getColor(R.color.text))
             setNavigationOnClickListener { finish() }
         }
-        key = findViewById(R.id.key); server = findViewById(R.id.server)
-        key.setText(if (Regex("\\d{6}").matches(prefs.key)) prefs.key else ""); server.setText(prefs.baseUrl)
-        val quality = findViewById<RadioGroup>(R.id.quality)
-        quality.check(if (prefs.quality == 1) R.id.qHigh else R.id.qLow)
-        val wifi = findViewById<CheckBox>(R.id.wifiOnly); wifi.isChecked = prefs.wifiOnly
+        key = findViewById(R.id.key)
+        key.setText(if (Regex("\\d{6}").matches(prefs.key)) prefs.key else "")
 
         val btnSync = findViewById<Button>(R.id.btnSync)
         val btnCancel = findViewById<Button>(R.id.btnCancel)
@@ -59,13 +54,10 @@ class SyncActivity : AppCompatActivity() {
 
         btnSync.setOnClickListener {
             prefs.key = key.text.toString().filter { it.isDigit() }
-            prefs.baseUrl = server.text.toString().trim()
-            prefs.quality = if (quality.checkedRadioButtonId == R.id.qHigh) 1 else 0
-            prefs.wifiOnly = wifi.isChecked
             when {
                 !Regex("\\d{6}").matches(prefs.key) -> toast("6 haneli senkron key'ini gir.")
                 !hasInternet() -> toast("Senkron için internet bağlantısı gerekli.")
-                wifi.isChecked && !onWifi() -> toast("Sadece Wi-Fi seçili ama Wi-Fi bağlı değil.")
+                prefs.wifiOnly && !onWifi() -> toast("Sadece Wi-Fi seçili ama Wi-Fi bağlı değil.")
                 Build.VERSION.SDK_INT >= 33 &&
                     ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED ->
                     notifPerm.launch(Manifest.permission.POST_NOTIFICATIONS)

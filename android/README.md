@@ -3,7 +3,8 @@
 Çevrimdışı öncelikli müzik/video oynatıcı. Açılışta doğrudan yerel kütüphane gelir; sağ üstteki senkron simgesi key ekranını açar.
 
 - **Dil/araçlar:** Kotlin, XML View (Compose yok), Media3 ExoPlayer, SQLite, OkHttp. minSdk 21 (Android 5), targetSdk 34.
-- **Sekmeler:** Playlistler · Tümü · Videolar · Müzikler · Favoriler (en çok çalınan üstte; ❤ ile işaretlenenler önce).
+- **Ana ekran:** CarPlay tarzı ikonlu kutular: Playlistler · Tümü · Videolar · Müzikler · Favoriler (en çok çalınan üstte; ❤ ile işaretlenenler önce) · Karışık çal · Senkron · Ayarlar.
+- **Oynatıcı:** Her ekranın altında kendi kontrolleri ve ilerleme çizgisi olan küçük oynatıcı; dokununca ya da yukarı çekince tam ekran oynatıcıya (kapak/video, ilerleme çubuğu, karışık, tekrar, favori) büyür.
 - **Karışık çalma:** sıra oturum boyunca sabit; ⏮ önceki çalınana döner. Tekrar: kapalı / hepsi / tek.
 - **Depolama:** `Android/data/com.mekronize.app/files/Mekronize` (izin gerekmez). Oynatıcı sadece bu klasördekileri çalar.
 - **Android Auto:** Playlistler / Tümü / Müzikler / Favoriler ağacı (yalnızca ses). Telefonda *Android Auto → Geliştirici ayarları → Bilinmeyen kaynaklar* açık olmalı (Play Store dışı APK).

@@ -32,7 +32,8 @@
         </activity>
 
         <activity android:name=".ui.SyncActivity" android:exported="false" android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".ui.PlaylistActivity" android:exported="false" />
+        <activity android:name=".ui.ListActivity" android:exported="false" />
+        <activity android:name=".ui.SettingsActivity" android:exported="false" android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".ui.PlayerActivity"
             android:exported="false"

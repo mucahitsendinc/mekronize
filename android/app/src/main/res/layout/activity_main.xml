@@ -1,20 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent" android:layout_height="match_parent"
-    android:orientation="vertical" android:background="@color/bg">
-
-    <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/toolbar" android:layout_width="match_parent" android:layout_height="?attr/actionBarSize"
-        android:background="@color/surface" app:title="Mekronize" app:titleTextColor="@color/text" />
-
-    <com.google.android.material.tabs.TabLayout
-        android:id="@+id/tabs" android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:background="@color/surface" app:tabMode="scrollable" app:tabGravity="start"
-        app:tabTextColor="@color/muted" app:tabSelectedTextColor="@color/accent" app:tabIndicatorColor="@color/accent" />
-
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/pager" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" />
-
-    <include layout="@layout/mini_player" />
-</LinearLayout>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent" android:background="@color/bg">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical"
+            android:paddingStart="24dp" android:paddingEnd="24dp" android:paddingTop="20dp" android:paddingBottom="8dp">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Mekronize"
+                android:textColor="@color/text" android:textSize="30sp" android:textStyle="bold" />
+            <TextView android:id="@+id/subtitle" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:textColor="@color/muted" android:textSize="14sp" android:text="Çevrimdışı müzik ve video" />
+        </LinearLayout>
+        <androidx.recyclerview.widget.RecyclerView android:id="@+id/grid" android:layout_width="match_parent"
+            android:layout_height="0dp" android:layout_weight="1" android:clipToPadding="false"
+            android:paddingStart="16dp" android:paddingEnd="16dp" android:paddingTop="8dp" android:paddingBottom="100dp" />
+    </LinearLayout>
+    <include layout="@layout/player_sheet"/>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

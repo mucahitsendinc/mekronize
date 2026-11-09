@@ -1,6 +1,5 @@
 package com.mekronize.app.ui
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -27,10 +26,7 @@ class PlaylistsFragment : Fragment() {
         val list = v.findViewById<RecyclerView>(R.id.list)
         val empty = v.findViewById<TextView>(R.id.empty)
         val adapter = PlaylistAdapter { p ->
-            startActivity(
-                Intent(requireContext(), PlaylistActivity::class.java)
-                    .putExtra(PlaylistActivity.EXTRA_ID, p.id).putExtra(PlaylistActivity.EXTRA_NAME, p.name),
-            )
+            startActivity(ListActivity.intent(requireContext(), TrackListFragment.KIND_PLAYLIST, p.id, p.name))
         }
         list.layoutManager = LinearLayoutManager(requireContext())
         list.adapter = adapter

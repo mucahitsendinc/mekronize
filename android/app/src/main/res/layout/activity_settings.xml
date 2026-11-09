@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:background="@color/bg">
+    <com.google.android.material.appbar.MaterialToolbar android:id="@+id/toolbar"
+        android:layout_width="match_parent" android:layout_height="?attr/actionBarSize"
+        android:background="@color/bg" app:title="Ayarlar" app:titleTextColor="@color/text" />
+    <ScrollView android:layout_width="match_parent" android:layout_height="match_parent">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="vertical" android:padding="20dp">
+            <TextView style="@style/Label" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Sunucu adresi" />
+            <EditText android:id="@+id/server" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:hint="https://api.alanadin.com" android:inputType="textUri" android:singleLine="true"
+                android:textColor="@color/text" android:textColorHint="@color/muted" />
+
+            <TextView style="@style/Label" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:layout_marginTop="20dp" android:text="Video kalitesi (YouTube)" />
+            <RadioGroup android:id="@+id/quality" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+                <RadioButton android:id="@+id/qLow" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="360p (hafif)" android:textColor="@color/text" android:checked="true" />
+                <RadioButton android:id="@+id/qHigh" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp" android:text="720p" android:textColor="@color/text" />
+            </RadioGroup>
+            <CheckBox android:id="@+id/wifiOnly" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="Sadece Wi-Fi ile indir" android:textColor="@color/text" />
+
+            <TextView style="@style/Label" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:layout_marginTop="24dp" android:text="Depolama" />
+            <TextView android:id="@+id/storage" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:textColor="@color/text" android:textSize="15sp" />
+            <Button android:id="@+id/btnClear" style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp"
+                android:text="İndirilen her şeyi sil" android:textColor="#FF6B6B" />
+
+            <Button android:id="@+id/btnSave" android:layout_width="match_parent" android:layout_height="56dp"
+                android:layout_marginTop="24dp" android:text="Kaydet" android:textStyle="bold" />
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

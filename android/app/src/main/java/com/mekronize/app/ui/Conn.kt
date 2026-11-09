@@ -14,6 +14,8 @@ import com.mekronize.app.play.PlaybackService
 /** Oynatma servisine tek bağlantı (ana iş parçacığından kullanılır). */
 object Conn {
     @Volatile var controller: MediaController? = null
+    /** Çalma başlayınca oynatıcı sayfasının tam ekran açılması istendi (video). */
+    @Volatile var expandNext = false
     private var future: ListenableFuture<MediaController>? = null
     private val waiting = ArrayList<(MediaController) -> Unit>()
 
@@ -52,7 +54,7 @@ object Conn {
             if (shuffle != null) c.shuffleModeEnabled = shuffle
             c.prepare()
             c.play()
-            if (tracks[start].isVideo) openPlayer(ctx)
+            if (tracks[start].isVideo) expandNext = true
         }
     }
 
