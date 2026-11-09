@@ -57,6 +57,8 @@ class PlayerSheet(private val act: Activity) {
     private val stage: View = act.findViewById(R.id.stage)
     private val ctrlGroup: View = act.findViewById(R.id.ctrlGroup)
     private val topBar: View = act.findViewById(R.id.topBar)
+    private val titleRow: View = act.findViewById(R.id.titleRow)
+    private val caption: TextView = act.findViewById(R.id.caption)
     private var controlsShown = true
     private var lastPoke = 0L
 
@@ -185,7 +187,7 @@ class PlayerSheet(private val act: Activity) {
         val isVideo = c.mediaMetadata.mediaType == MediaMetadata.MEDIA_TYPE_VIDEO
         val title = (c.mediaMetadata.title ?: "").toString()
         val sub = if (isVideo) "Video" else "Müzik"
-        miniTitle.text = title; fullTitle.text = title
+        miniTitle.text = title; fullTitle.text = title; caption.text = title
         miniSub.text = sub; fullSub.text = sub
         miniIcon.setImageResource(if (isVideo) R.drawable.ic_video else R.drawable.ic_music)
         val playIcon = if (c.isPlaying) R.drawable.ic_pause else R.drawable.ic_play
@@ -229,24 +231,27 @@ class PlayerSheet(private val act: Activity) {
         return expanded && c.mediaMetadata.mediaType == MediaMetadata.MEDIA_TYPE_VIDEO
     }
 
-    private fun showControls() {
-        lastPoke = SystemClock.uptimeMillis()
-        if (controlsShown) return
-        controlsShown = true
-        for (v in listOf(ctrlGroup, topBar)) {
-            v.visibility = View.VISIBLE
-            v.animate().alpha(1f).translationY(0f).setDuration(220).withEndAction(null).start()
+    private fun dp(v: Int) = (v * act.resources.displayMetrics.density).toInt()
+
+    /** Kontroller gizlenince video tüm alanı kaplar; sadece başlık sol altta silik küçük bir yazı olarak kalır. */
+    private fun applyControls(show: Boolean) {
+        if (controlsShown == show) return
+        controlsShown = show
+        android.transition.TransitionManager.beginDelayedTransition(
+            full as android.view.ViewGroup, android.transition.AutoTransition().setDuration(240),
+        )
+        val vis = if (show) View.VISIBLE else View.GONE
+        topBar.visibility = vis; titleRow.visibility = vis; ctrlGroup.visibility = vis
+        full.setPadding(if (show) dp(24) else 0, 0, if (show) dp(24) else 0, if (show) dp(16) else 0)
+        stage.layoutParams = (stage.layoutParams as android.widget.LinearLayout.LayoutParams).apply {
+            topMargin = if (show) dp(8) else 0; bottomMargin = if (show) dp(8) else 0
         }
+        caption.visibility = if (show) View.GONE else View.VISIBLE
+        full.setBackgroundColor(if (show) 0 else android.graphics.Color.BLACK)
     }
 
-    private fun hideControls() {
-        if (!controlsShown) return
-        controlsShown = false
-        ctrlGroup.animate().alpha(0f).translationY(ctrlGroup.height.toFloat() * 0.6f).setDuration(260)
-            .withEndAction { if (!controlsShown) ctrlGroup.visibility = View.INVISIBLE }.start()
-        topBar.animate().alpha(0f).translationY(-topBar.height.toFloat() * 0.6f).setDuration(260)
-            .withEndAction { if (!controlsShown) topBar.visibility = View.INVISIBLE }.start()
-    }
+    private fun showControls() { lastPoke = SystemClock.uptimeMillis(); applyControls(true) }
+    private fun hideControls() = applyControls(false)
 
     /** Video oynarken kontroller bir süre dokunulmazsa aşağı kayıp gizlenir; ekrana bir kez dokunmak geri getirir. */
     private fun autoHide() {

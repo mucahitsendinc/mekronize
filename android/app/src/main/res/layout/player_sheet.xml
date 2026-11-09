@@ -56,9 +56,13 @@
             <androidx.media3.ui.PlayerView android:id="@+id/video" android:layout_width="match_parent" android:layout_height="match_parent"
                 android:visibility="gone" app:use_controller="false" app:resize_mode="fit" android:background="@android:color/black"
                 app:shutter_background_color="@android:color/black" />
+            <TextView android:id="@+id/caption" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:layout_gravity="bottom|start" android:layout_margin="14dp" android:singleLine="true" android:ellipsize="end"
+                android:alpha="0.55" android:textColor="@android:color/white" android:textSize="12sp"
+                android:shadowColor="#99000000" android:shadowRadius="4" android:visibility="gone" />
         </FrameLayout>
 
-        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal"
+        <LinearLayout android:id="@+id/titleRow" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal"
             android:gravity="center_vertical">
             <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
                 <TextView android:id="@+id/fullTitle" android:layout_width="match_parent" android:layout_height="wrap_content"
