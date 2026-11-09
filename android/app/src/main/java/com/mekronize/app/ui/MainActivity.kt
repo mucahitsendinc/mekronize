@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var sheet: PlayerSheet
 
     private class Tile(
-        val id: Int, val title: String, var sub: String, val icon: Int, val c1: Int, val c2: Int,
+        val id: Int, val title: String, var sub: String, val icon: Int, val c1: Int, val c2: Int, var enabled: Boolean = true,
     )
 
     private val tiles = listOf(
@@ -59,9 +59,12 @@ class MainActivity : AppCompatActivity() {
                     }
                     tiles[0].sub = "$pl liste"; tiles[1].sub = "$all parça"; tiles[2].sub = "$vid video"
                     tiles[3].sub = "$mus müzik"; tiles[4].sub = "$fav favori"
+                    tiles[0].enabled = pl > 0; tiles[1].enabled = all > 0; tiles[2].enabled = vid > 0
+                    tiles[3].enabled = mus > 0; tiles[4].enabled = fav > 0; tiles[5].enabled = all > 0
+                    for (i in 0..4) if (!tiles[i].enabled) tiles[i].sub = "İçerik yok"
                     adapter.notifyDataSetChanged()
                     findViewById<TextView>(R.id.subtitle).text =
-                        if (all == 0) "Başlamak için Senkron'a dokun" else "$all parça cihazında hazır"
+                        "$all parça"
                 }
             }
         }
@@ -104,12 +107,15 @@ class MainActivity : AppCompatActivity() {
         override fun onBindViewHolder(h: VH, i: Int) {
             val t = data[i]
             val d = h.root.resources.displayMetrics.density
-            h.root.background = GradientDrawable(GradientDrawable.Orientation.TL_BR, intArrayOf(t.c1, t.c2)).apply { cornerRadius = 26 * d }
+            val colors = if (t.enabled) intArrayOf(t.c1, t.c2) else intArrayOf(0xFF1B1E29.toInt(), 0xFF14161E.toInt())
+            h.root.background = GradientDrawable(GradientDrawable.Orientation.TL_BR, colors).apply { cornerRadius = 26 * d }
+            h.root.alpha = if (t.enabled) 1f else 0.55f
+            h.root.isEnabled = t.enabled
             h.icon.setImageResource(t.icon)
             h.icon.background = GradientDrawable().apply { shape = GradientDrawable.OVAL; setColor(0x33FFFFFF) }
             h.title.text = t.title
             h.sub.text = t.sub
-            h.root.setOnClickListener { onClick(t) }
+            h.root.setOnClickListener { if (t.enabled) onClick(t) }
         }
     }
 }

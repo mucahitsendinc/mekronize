@@ -1,7 +1,12 @@
 package com.mekronize.app.ui
 
 import android.app.Activity
+import android.annotation.SuppressLint
 import android.os.Handler
+import android.os.SystemClock
+import android.view.MotionEvent
+import android.view.VelocityTracker
+import android.view.ViewConfiguration
 import android.os.Looper
 import android.view.View
 import android.widget.ImageButton
@@ -49,6 +54,12 @@ class PlayerSheet(private val act: Activity) {
     private val heart: ImageButton = act.findViewById(R.id.heart)
     private val fullscreen: ImageButton = act.findViewById(R.id.fullscreen)
 
+    private val stage: View = act.findViewById(R.id.stage)
+    private val ctrlGroup: View = act.findViewById(R.id.ctrlGroup)
+    private val topBar: View = act.findViewById(R.id.topBar)
+    private var controlsShown = true
+    private var lastPoke = 0L
+
     private var ctrl: MediaController? = null
     private var dragging = false
     private var started = false
@@ -78,6 +89,7 @@ class PlayerSheet(private val act: Activity) {
                 back.isEnabled = newState == BottomSheetBehavior.STATE_EXPANDED
                 if (newState == BottomSheetBehavior.STATE_COLLAPSED || newState == BottomSheetBehavior.STATE_HIDDEN) {
                     full.visibility = View.INVISIBLE; miniBar.alpha = 1f
+                    showControls()
                 }
                 attachVideo()
             }
@@ -115,6 +127,10 @@ class PlayerSheet(private val act: Activity) {
             Repo.toggleFavorite(id); refresh()
         }
         fullscreen.setOnClickListener { Conn.openPlayer(act) }
+        setupSwipe()
+        // Kontrollere her dokunuş, video sırasında gizleme sayacını sıfırlar
+        listOf<View>(play, shuffle, repeat, heart, fullscreen, seek, act.findViewById(R.id.prev), act.findViewById(R.id.next), act.findViewById(R.id.collapse))
+            .forEach { v -> v.setOnTouchListener { _, _ -> lastPoke = SystemClock.uptimeMillis(); false } }
         seek.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(s: SeekBar, p: Int, fromUser: Boolean) {
                 if (fromUser) ctrl?.let { c -> val d = c.duration; if (d > 0) pos.text = fmt(d * p / 1000) }
@@ -193,6 +209,7 @@ class PlayerSheet(private val act: Activity) {
 
     private fun tick() {
         val c = ctrl ?: return
+        autoHide()
         val d = c.duration
         val p = c.currentPosition
         if (d == C.TIME_UNSET || d <= 0) {
@@ -204,6 +221,97 @@ class PlayerSheet(private val act: Activity) {
         miniProgress.progress = frac
         if (!dragging) { seek.progress = frac; pos.text = fmt(p) }
         dur.text = fmt(d)
+    }
+
+    private fun videoMode(): Boolean {
+        val c = ctrl ?: return false
+        val expanded = behavior.state == BottomSheetBehavior.STATE_EXPANDED
+        return expanded && c.mediaMetadata.mediaType == MediaMetadata.MEDIA_TYPE_VIDEO
+    }
+
+    private fun showControls() {
+        lastPoke = SystemClock.uptimeMillis()
+        if (controlsShown) return
+        controlsShown = true
+        for (v in listOf(ctrlGroup, topBar)) {
+            v.visibility = View.VISIBLE
+            v.animate().alpha(1f).translationY(0f).setDuration(220).withEndAction(null).start()
+        }
+    }
+
+    private fun hideControls() {
+        if (!controlsShown) return
+        controlsShown = false
+        ctrlGroup.animate().alpha(0f).translationY(ctrlGroup.height.toFloat() * 0.6f).setDuration(260)
+            .withEndAction { if (!controlsShown) ctrlGroup.visibility = View.INVISIBLE }.start()
+        topBar.animate().alpha(0f).translationY(-topBar.height.toFloat() * 0.6f).setDuration(260)
+            .withEndAction { if (!controlsShown) topBar.visibility = View.INVISIBLE }.start()
+    }
+
+    /** Video oynarken kontroller bir süre dokunulmazsa aşağı kayıp gizlenir; ekrana bir kez dokunmak geri getirir. */
+    private fun autoHide() {
+        val c = ctrl ?: return
+        val vm = videoMode()
+        sheet.keepScreenOn = vm && c.isPlaying
+        if (!vm || !c.isPlaying) { showControls(); return }
+        if (controlsShown && SystemClock.uptimeMillis() - lastPoke > 3500) hideControls()
+    }
+
+    /** Büyük oynatıcıda kapak/video alanını sağa-sola sürükleyerek önceki/sonraki parçaya geçiş. */
+    @SuppressLint("ClickableViewAccessibility")
+    private fun setupSwipe() {
+        val slop = ViewConfiguration.get(act).scaledTouchSlop
+        val moving = listOf(stage, fullTitle, fullSub)
+        var downX = 0f; var downY = 0f; var drag = false
+        var tracker: VelocityTracker? = null
+
+        fun offset(dx: Float) = moving.forEach { it.translationX = dx; it.alpha = 1f - (kotlin.math.abs(dx) / (stage.width.coerceAtLeast(1) * 1.4f)).coerceAtMost(0.6f) }
+        fun settle() = moving.forEach { it.animate().translationX(0f).alpha(1f).setDuration(180).start() }
+
+        stage.setOnTouchListener { v, e ->
+            when (e.actionMasked) {
+                MotionEvent.ACTION_DOWN -> {
+                    downX = e.rawX; downY = e.rawY; drag = false
+                    tracker?.recycle(); tracker = VelocityTracker.obtain().also { it.addMovement(e) }
+                    true
+                }
+                MotionEvent.ACTION_MOVE -> {
+                    tracker?.addMovement(e)
+                    val dx = e.rawX - downX; val dy = e.rawY - downY
+                    if (!drag && kotlin.math.abs(dx) > slop && kotlin.math.abs(dx) > kotlin.math.abs(dy)) {
+                        drag = true; v.parent.requestDisallowInterceptTouchEvent(true)
+                    }
+                    if (drag) offset(dx)
+                    true
+                }
+                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                    tracker?.addMovement(e); tracker?.computeCurrentVelocity(1000)
+                    val vx = tracker?.xVelocity ?: 0f
+                    tracker?.recycle(); tracker = null
+                    val dx = e.rawX - downX
+                    val c = ctrl
+                    if (!drag) {
+                        if (e.actionMasked == MotionEvent.ACTION_UP && videoMode()) {
+                            if (controlsShown) hideControls() else showControls()
+                        }
+                    } else if (c != null && e.actionMasked == MotionEvent.ACTION_UP) {
+                        val w = stage.width.toFloat()
+                        val next = (dx < -w / 4 || vx < -900) && c.hasNextMediaItem()
+                        val prev = (dx > w / 4 || vx > 900) && c.hasPreviousMediaItem()
+                        if (next || prev) {
+                            val out = if (next) -w else w
+                            moving.forEach { it.animate().translationX(out).alpha(0f).setDuration(140).start() }
+                            handler.postDelayed({
+                                if (next) c.seekToNextMediaItem() else c.seekToPreviousMediaItem()
+                                moving.forEach { it.translationX = -out; it.alpha = 0f; it.animate().translationX(0f).alpha(1f).setDuration(180).start() }
+                            }, 150)
+                        } else settle()
+                    } else settle()
+                    true
+                }
+                else -> true
+            }
+        }
     }
 
     private fun fmt(ms: Long): String {

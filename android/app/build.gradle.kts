@@ -99,3 +99,15 @@ dependencies {
 
     testImplementation("junit:junit:4.13.2")
 }
+
+// Derleme bitince güncel release APK'sını diskteki dist/ klasörüne kopyala
+afterEvaluate {
+    tasks.named("assembleRelease") {
+        doLast {
+            val ver = android.defaultConfig.versionName
+            val src = layout.buildDirectory.file("outputs/apk/release/app-release.apk").get().asFile
+            val dst = File(rootProject.projectDir.parentFile, "dist/mekronize-$ver.apk")
+            if (src.exists()) { dst.parentFile.mkdirs(); src.copyTo(dst, overwrite = true) }
+        }
+    }
+}

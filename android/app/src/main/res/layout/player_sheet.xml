@@ -37,7 +37,7 @@
         android:orientation="vertical" android:alpha="0" android:visibility="invisible"
         android:paddingStart="24dp" android:paddingEnd="24dp" android:paddingBottom="16dp">
 
-        <FrameLayout android:layout_width="match_parent" android:layout_height="56dp">
+        <FrameLayout android:id="@+id/topBar" android:layout_width="match_parent" android:layout_height="56dp">
             <ImageButton android:id="@+id/collapse" style="@style/IconBtn" android:layout_gravity="start|center_vertical"
                 android:layout_marginStart="-12dp" android:src="@drawable/ic_chevron_down" android:contentDescription="Küçült" />
             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center"
@@ -70,6 +70,7 @@
                 android:contentDescription="Favori" />
         </LinearLayout>
 
+        <LinearLayout android:id="@+id/ctrlGroup" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
         <SeekBar android:id="@+id/seek" android:layout_width="match_parent" android:layout_height="40dp"
             android:layout_marginStart="-12dp" android:layout_marginEnd="-12dp" android:max="1000"
             android:progressDrawable="@drawable/seek_progress" android:thumb="@drawable/seek_thumb" android:splitTrack="false" />
@@ -93,6 +94,7 @@
                 android:layout_height="56dp" android:src="@drawable/ic_next" android:contentDescription="Sonraki" />
             <ImageButton android:id="@+id/repeat" style="@style/IconBtn" android:layout_weight="1" android:layout_width="0dp"
                 android:src="@drawable/ic_repeat" android:contentDescription="Tekrar" />
+        </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 </FrameLayout>
