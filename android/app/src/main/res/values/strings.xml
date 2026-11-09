@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Mekronize</string>
+    <string name="tab_playlists">Playlistler</string>
+    <string name="tab_all">Tümü</string>
+    <string name="tab_videos">Videolar</string>
+    <string name="tab_music">Müzikler</string>
+    <string name="tab_favorites">Favoriler</string>
+    <string name="sync">Senkron</string>
+</resources>

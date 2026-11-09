@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical">
+    <com.google.android.material.appbar.MaterialToolbar android:id="@+id/toolbar"
+        android:layout_width="match_parent" android:layout_height="?attr/actionBarSize"
+        android:background="@color/surface" app:title="Senkron" app:titleTextColor="@color/text" />
+    <ScrollView android:layout_width="match_parent" android:layout_height="match_parent" android:fillViewport="true">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="vertical" android:padding="16dp">
+
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Senkron key"
+                android:textColor="@color/muted" android:textSize="13sp" />
+            <EditText android:id="@+id/key" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:hint="6 haneli key" android:inputType="number" android:maxLength="6"
+                android:singleLine="true" android:textSize="24sp" android:letterSpacing="0.2"
+                android:textColor="@color/text" android:textColorHint="@color/muted" />
+
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="12dp"
+                android:text="Sunucu adresi" android:textColor="@color/muted" android:textSize="13sp" />
+            <EditText android:id="@+id/server" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:hint="https://api.alanadin.com" android:inputType="textUri" android:singleLine="true"
+                android:textColor="@color/text" android:textColorHint="@color/muted" />
+
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="12dp"
+                android:text="Video kalitesi (YouTube)" android:textColor="@color/muted" android:textSize="13sp" />
+            <RadioGroup android:id="@+id/quality" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <RadioButton android:id="@+id/qLow" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="360p (hafif)" android:textColor="@color/text" android:checked="true" />
+                <RadioButton android:id="@+id/qHigh" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp" android:text="720p" android:textColor="@color/text" />
+            </RadioGroup>
+            <CheckBox android:id="@+id/wifiOnly" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="Sadece Wi-Fi ile indir" android:textColor="@color/text" />
+
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:layout_marginTop="12dp" android:orientation="horizontal">
+                <Button android:id="@+id/btnSync" android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:text="Senkronla" />
+                <Button android:id="@+id/btnCancel" style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp" android:text="İptal" android:visibility="gone" />
+            </LinearLayout>
+
+            <ProgressBar android:id="@+id/progress" style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp"
+                android:max="100" android:visibility="gone" />
+            <TextView android:id="@+id/status" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:layout_marginTop="8dp" android:textColor="@color/text" android:textSize="14sp" />
+            <TextView android:id="@+id/item" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:textColor="@color/muted" android:textSize="13sp" android:singleLine="true" android:ellipsize="end" />
+            <TextView android:id="@+id/errors" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:layout_marginTop="8dp" android:textColor="#FF6B6B" android:textSize="12sp" />
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

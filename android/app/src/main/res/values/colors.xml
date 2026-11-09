@@ -1,0 +1,9 @@
+<resources>
+    <color name="bg">#0F1115</color>
+    <color name="surface">#181B22</color>
+    <color name="line">#262A33</color>
+    <color name="accent">#6C8CFF</color>
+    <color name="text">#E8EAF0</color>
+    <color name="muted">#8B92A1</color>
+    <color name="heart">#FF5C7A</color>
+</resources>

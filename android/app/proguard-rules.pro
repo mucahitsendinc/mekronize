@@ -1,0 +1,18 @@
+# NewPipe Extractor (+ Rhino, jsoup, protobuf)
+-keep class org.schabi.newpipe.extractor.** { *; }
+-keep class org.mozilla.javascript.** { *; }
+-keep class org.mozilla.classfile.** { *; }
+-keep class com.grack.nanojson.** { *; }
+-dontwarn org.mozilla.javascript.JavaToJSONConverters
+-dontwarn org.mozilla.javascript.tools.**
+-dontwarn javax.script.**
+-dontwarn java.beans.**
+-dontwarn com.google.protobuf.**
+-dontwarn org.jspecify.annotations.**
+-dontwarn javax.annotation.**
+-dontwarn kotlin.Metadata
+-dontwarn com.google.errorprone.annotations.**
+-dontwarn org.checkerframework.**
+-dontwarn com.google.j2objc.annotations.**
+-dontwarn sun.misc.**
+-dontwarn jdk.dynalink.**

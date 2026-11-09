@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent" android:layout_height="match_parent" android:background="@android:color/black">
+    <androidx.media3.ui.PlayerView android:id="@+id/playerView" android:layout_width="match_parent" android:layout_height="match_parent"
+        app:resize_mode="fit" app:show_shuffle_button="true" app:repeat_toggle_modes="one|all"
+        app:default_artwork="@drawable/ic_music" app:use_artwork="true" app:show_buffering="when_playing" />
+    <TextView android:id="@+id/playerTitle" android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_gravity="top" android:padding="16dp" android:singleLine="true" android:ellipsize="end"
+        android:textColor="@android:color/white" android:textSize="16sp" android:background="#66000000" />
+</FrameLayout>
