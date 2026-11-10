@@ -60,7 +60,7 @@ class YouTube
         return $fallback;
     }
 
-    /** Linkteki oynatma listesi kimliği (list=...). Otomatik "mix" (RD...) listeleri desteklenmez. */
+    /** Linkteki oynatma listesi kimliği (list=...). Otomatik "mix" (RD...) listeleri de desteklenir (videoId gerekir). */
     public static function extractPlaylistId(string $url): ?string
     {
         $parts = parse_url(trim(str_contains($url, '://') ? $url : 'https://'.$url));
@@ -69,7 +69,7 @@ class YouTube
         }
         parse_str($parts['query'], $q);
         $id = $q['list'] ?? '';
-        if (! is_string($id) || ! preg_match('/^[A-Za-z0-9_-]{10,64}$/', $id) || str_starts_with($id, 'RD')) {
+        if (! is_string($id) || ! preg_match('/^[A-Za-z0-9_-]{10,64}$/', $id) ) {
             return null;
         }
 
@@ -119,8 +119,11 @@ class YouTube
      *
      * @return array{title:string,items:array<int,array{id:string,title:string,thumbnail:string}>,truncated:bool}|null
      */
-    public static function playlist(string $listId, int $max = 300): ?array
+    public static function playlist(string $listId, int $max = 300, ?string $videoId = null): ?array
     {
+        if (str_starts_with($listId, 'RD')) {
+            return self::mix($listId, $videoId);
+        }
         $data = self::browse(['browseId' => 'VL'.$listId]);
         if (! $data) {
             return null;
@@ -155,5 +158,42 @@ class YouTube
         $truncated = count($out) > $max || (bool) $token;
 
         return ['title' => mb_substr($title, 0, 120), 'items' => array_slice($out, 0, $max), 'truncated' => $truncated];
+    }
+
+    /** Otomatik "mix" (RD...) listesi: watch/next ucundan ilk ~25 video. */
+    private static function mix(string $listId, ?string $videoId): ?array
+    {
+        $videoId = $videoId ?: substr($listId, 2);
+        if (! preg_match('/^[A-Za-z0-9_-]{11}$/', $videoId)) {
+            return null;
+        }
+        try {
+            $r = Http::timeout(15)->withHeaders([
+                'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36',
+            ])->asJson()->post('https://www.youtube.com/youtubei/v1/next?prettyPrint=false', [
+                'videoId' => $videoId, 'playlistId' => $listId, 'context' => ['client' => self::WEB],
+            ]);
+            $pl = $r->ok() ? ($r->json('contents.twoColumnWatchNextResults.playlist.playlist') ?? null) : null;
+        } catch (\Throwable) {
+            return null;
+        }
+        if (! $pl) {
+            return null;
+        }
+        $out = [];
+        foreach ($pl['contents'] ?? [] as $c) {
+            $v = $c['playlistPanelVideoRenderer'] ?? null;
+            $id = $v['videoId'] ?? '';
+            if (! preg_match('/^[A-Za-z0-9_-]{11}$/', $id) || isset($out[$id])) {
+                continue;
+            }
+            $out[$id] = [
+                'id' => $id,
+                'title' => mb_substr($v['title']['simpleText'] ?? $v['title']['runs'][0]['text'] ?? 'YouTube '.$id, 0, 190),
+                'thumbnail' => "https://i.ytimg.com/vi/{$id}/hqdefault.jpg",
+            ];
+        }
+
+        return $out ? ['title' => mb_substr($pl['title'] ?? 'YouTube mix', 0, 120), 'items' => array_values($out), 'truncated' => false] : null;
     }
 }

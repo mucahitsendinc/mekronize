@@ -46,13 +46,13 @@ class MediaController extends Controller
         $found = [];
         foreach ($lines as $line) {
             if ($listId = YouTube::extractPlaylistId($line)) {
-                $found[$listId] = ['list' => $listId, 'has_video' => (bool) YouTube::extractId($line)];
+                $found[$listId] = ['list' => $listId, 'has_video' => (bool) YouTube::extractId($line), 'video' => YouTube::extractId($line)];
             }
         }
         if ($found && empty($data['decision'])) {
             $prompts = [];
             foreach ($found as $f) {
-                $pl = YouTube::playlist($f['list']);
+                $pl = YouTube::playlist($f['list'], 300, $f['video']);
                 $prompts[] = $f + ['title' => $pl['title'] ?? 'YouTube listesi', 'count' => $pl ? count($pl['items']) : 0, 'truncated' => $pl['truncated'] ?? false, 'ok' => (bool) $pl];
             }
 
@@ -89,7 +89,7 @@ class MediaController extends Controller
                     continue;
                 }
                 $handledLists[$listId] = true;
-                $pl = YouTube::playlist($listId);
+                $pl = YouTube::playlist($listId, 300, $videoId);
                 if (! $pl || ! $pl['items']) {
                     $bad++;
 

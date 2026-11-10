@@ -28,63 +28,42 @@
 </div>
 @endif
 
-<div class="card">
-  <h2>Senkron key'in</h2>
-  <p class="sub">Android uygulamasında senkron ekranına bu key'i gir. Web'e tekrar girmek için de aynı key kullanılır.</p>
-  <div class="keybox">
-    <span class="keywrap"><span class="key" id="keyText">{{ $user->sync_key }}</span></span>
-    <button class="ghost" type="button" id="copyKey">Kopyala</button>
-  </div>
-  @php($ks = $user->keyChangeStatus())
-  <details><summary>Key'i yenile</summary>
-    <form method="post" action="{{ route('key.update') }}" class="row" style="margin-top:10px"
-          onsubmit="return confirm('Key değişecek; cihazlarda yeni key ile tekrar senkron yapman gerekir. Devam?')">@csrf
-      <span class="mut fit" style="font-size:13px">Bu saat için kalan hak: {{ $ks['left'] }}/{{ \App\Models\User::KEY_CHANGES_PER_HOUR }}@if($ks['retry_minutes']) · ~{{ $ks['retry_minutes'] }} dk sonra @endif</span>
-      <button class="ghost sm fit" @if($ks['left'] < 1) disabled @endif>Yeni key üret</button>
-    </form>
-  </details>
+<div class="stats">
+  <div class="stat"><small>Toplam içerik</small><b>{{ $media->count() }}</b></div>
+  <div class="stat"><small>Müzik</small><b>{{ $media->where('type','audio')->count() }}</b></div>
+  <div class="stat"><small>Video</small><b>{{ $media->where('type','video')->count() }}</b></div>
+  <div class="stat"><small>Playlist</small><b>{{ $playlists->count() }}</b></div>
 </div>
 
-<div class="grid2">
-  <div class="card">
-    <h2>YouTube linki ekle</h2>
-    <p class="sub">Sunucuda dosya saklanmaz; telefon senkron sırasında kendisi indirir. Her satıra bir link, oynatma listesi de olur.</p>
-    <form method="post" action="{{ route('media.youtube') }}">@csrf
-      <textarea name="links" placeholder="https://www.youtube.com/watch?v=…&#10;https://www.youtube.com/playlist?list=…" required>{{ old('links') }}</textarea>
-      <div class="row" style="margin-top:10px">
-        <select name="type"><option value="audio" @selected(old('type')==='audio')>Müzik (sadece ses)</option><option value="video" @selected(old('type')==='video')>Video</option></select>
-        <button class="fit">Ekle</button>
-      </div>
-    </form>
-  </div>
+<div class="cols">
+<div class="col">
 
-  <div class="card">
-    <h2>Dosya yükle</h2>
-    <p class="sub">mp3, m4a, aac, ogg, wav, flac, mp4, mov, webm…</p>
-    <div class="dz" id="dz">
-      <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4m0 0L7 9m5-5 5 5"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg>
-      <b>Dosyaları buraya sürükle</b>
-      <small>ya da tıklayıp seç · birden fazla dosya olur</small>
-      <input type="file" id="files" multiple accept=".mp3,.m4a,.aac,.ogg,.oga,.opus,.wav,.flac,.mp4,.m4v,.mov,.webm,.mkv,.3gp">
+<div class="card">
+  <h2><span class="ic"><svg viewBox="0 0 24 24"><path d="M10 14a4 4 0 1 1 3.5-6H21v3h-2v2h-3v-2h-2.5A4 4 0 0 1 10 14z"/></svg></span> YouTube linki ekle</h2>
+  <p class="sub">Sunucuda dosya saklanmaz; telefon senkron sırasında kendisi indirir. Her satıra bir link; oynatma listesi ve mix linkleri de olur.</p>
+  <form method="post" action="{{ route('media.youtube') }}">@csrf
+    <textarea name="links" placeholder="https://www.youtube.com/watch?v=…&#10;https://www.youtube.com/playlist?list=…" required>{{ old('links') }}</textarea>
+    <div class="row" style="margin-top:12px">
+      <select name="type"><option value="audio" @selected(old('type')==='audio')>Müzik (sadece ses)</option><option value="video" @selected(old('type')==='video')>Video</option></select>
+      <button class="fit">Ekle</button>
     </div>
-    <ul class="queue" id="queue"></ul>
-  </div>
-</div>
-
-<div class="card">
-  <h2>Playlistler</h2>
-  <form method="post" action="{{ route('playlists.store') }}" class="row" style="margin-top:10px">@csrf
-    <input name="name" placeholder="Yeni playlist adı" required maxlength="120"><button class="fit">Oluştur</button>
   </form>
-  @if($playlists->count())
-  <div class="chips">
-    @foreach($playlists as $p)<a class="chip" href="{{ route('playlists.edit', $p) }}">{{ $p->name }} <em>{{ $p->media_count }} parça</em></a>@endforeach
-  </div>
-  @endif
 </div>
 
 <div class="card">
-  <h2>Kütüphane <span class="mut" style="font-weight:400">({{ $media->count() }})</span></h2>
+  <h2><span class="ic"><svg viewBox="0 0 24 24"><path d="M12 16V4m0 0L7 9m5-5 5 5"/><path d="M4 16v3h16v-3"/></svg></span> Dosya yükle</h2>
+  <p class="sub">mp3, m4a, aac, ogg, wav, flac, mp4, mov, webm…</p>
+  <div class="dz" id="dz">
+    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4m0 0L7 9m5-5 5 5"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg>
+    <b>Dosyaları buraya sürükle</b>
+    <small>ya da tıklayıp seç · birden fazla dosya olur</small>
+    <input type="file" id="files" multiple accept=".mp3,.m4a,.aac,.ogg,.oga,.opus,.wav,.flac,.mp4,.m4v,.mov,.webm,.mkv,.3gp">
+  </div>
+  <ul class="queue" id="queue"></ul>
+</div>
+
+<div class="card">
+  <h2><span class="ic"><svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></span> Kütüphane <span class="mut" style="font-weight:400">({{ $media->count() }})</span></h2>
   <div class="tabs" id="tabs">
     <button type="button" class="on" data-f="all">Tümü</button>
     <button type="button" data-f="audio">Müzik</button>
@@ -105,6 +84,41 @@
     <div class="empty">Henüz içerik yok. Bir YouTube linki ekle ya da dosya sürükle.</div>
     @endforelse
   </div>
+</div>
+
+</div>
+<div class="col">
+
+<div class="card keycard">
+  <h2><span class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span> Senkron key'in</h2>
+  <p class="sub">Android uygulamasında senkron ekranına bu key'i gir. Web'e tekrar girmek için de aynı key kullanılır.</p>
+  <div class="keybox">
+    <span class="keywrap"><span class="key" id="keyText">{{ $user->sync_key }}</span></span>
+    <button class="ghost" type="button" id="copyKey">Kopyala</button>
+  </div>
+  @php($ks = $user->keyChangeStatus())
+  <details><summary>Key'i yenile</summary>
+    <form method="post" action="{{ route('key.update') }}" class="row" style="margin-top:10px"
+          onsubmit="return confirm('Key değişecek; cihazlarda yeni key ile tekrar senkron yapman gerekir. Devam?')">@csrf
+      <span class="mut fit" style="font-size:13px">Bu saat için kalan hak: {{ $ks['left'] }}/{{ \App\Models\User::KEY_CHANGES_PER_HOUR }}@if($ks['retry_minutes']) · ~{{ $ks['retry_minutes'] }} dk sonra @endif</span>
+      <button class="ghost sm fit" @if($ks['left'] < 1) disabled @endif>Yeni key üret</button>
+    </form>
+  </details>
+</div>
+
+<div class="card">
+  <h2><span class="ic"><svg viewBox="0 0 24 24"><path d="M4 6h12M4 12h12M4 18h8M18 15v6m-3-3h6"/></svg></span> Playlistler</h2>
+  <form method="post" action="{{ route('playlists.store') }}" class="row" style="margin-top:10px">@csrf
+    <input name="name" placeholder="Yeni playlist adı" required maxlength="120"><button class="fit">Oluştur</button>
+  </form>
+  @if($playlists->count())
+  <div class="chips">
+    @foreach($playlists as $p)<a class="chip" href="{{ route('playlists.edit', $p) }}">{{ $p->name }} <em>{{ $p->media_count }} parça</em></a>@endforeach
+  </div>
+  @endif
+</div>
+
+</div>
 </div>
 @endsection
 
