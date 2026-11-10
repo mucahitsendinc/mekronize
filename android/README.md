@@ -1,6 +1,6 @@
 # Mekronize Android
 
-Çevrimdışı öncelikli müzik/video oynatıcı. Açılışta doğrudan yerel kütüphane gelir; sağ üstteki senkron simgesi key ekranını açar.
+Çevrimdışı öncelikli müzik/video oynatıcı. Açılışta doğrudan yerel kütüphane gelir; senkron ve ayarlar ana ekrandaki kutulardan açılır.
 
 - **Dil/araçlar:** Kotlin, XML View (Compose yok), Media3 ExoPlayer, SQLite, OkHttp. minSdk 21 (Android 5), targetSdk 34.
 - **Ana ekran:** CarPlay tarzı ikonlu kutular: Playlistler · Tümü · Videolar · Müzikler · Favoriler (en çok çalınan üstte; ❤ ile işaretlenenler önce) · Karışık çal · Senkron · Ayarlar.
